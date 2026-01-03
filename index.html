@@ -4,72 +4,164 @@
   <meta charset="UTF-8">
   <title>誕生日占い</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- フォント -->
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f4f6f8;
-      padding: 20px;
+      font-family: "Noto Sans JP", system-ui, sans-serif;
+      background: linear-gradient(180deg, #f5f3ff, #faf5ff);
+      padding: 24px;
     }
+
     .box {
-      max-width: 500px;
+      max-width: 540px;
       margin: auto;
       background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      padding: 24px;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
     }
+
     h1 {
       text-align: center;
+      font-family: "Zen Maru Gothic", sans-serif;
+      font-size: 26px;
+      margin-bottom: 20px;
     }
+
     label {
       display: block;
-      margin-top: 15px;
+      margin-top: 14px;
+      font-size: 14px;
+      color: #555;
     }
-    select, button {
+
+    select {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
+      padding: 12px;
+      margin-top: 6px;
       font-size: 16px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
     }
+
     button {
-      margin-top: 20px;
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 999px;
+      color: white;
       cursor: pointer;
+      background: linear-gradient(90deg, #a855f7, #ec4899);
+      box-shadow: 0 10px 20px rgba(236,72,153,0.4);
     }
+
     .result {
-      margin-top: 20px;
-      padding: 15px;
-      background: #eef;
-      border-radius: 8px;
-      white-space: pre-line;
+      margin-top: 28px;
+      display: none;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      padding: 20px;
+      border-radius: 24px;
+      color: white;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .money { background: linear-gradient(135deg, #fbbf24, #fb923c); }
+    .health { background: linear-gradient(135deg, #a855f7, #ec4899); }
+    .meet { background: linear-gradient(135deg, #f472b6, #fb7185); }
+    .total { background: linear-gradient(135deg, #22c55e, #16a34a); }
+
+    .card h2 {
+      font-family: "Zen Maru Gothic", sans-serif;
+      font-size: 18px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .rank {
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      margin: 6px 0;
+    }
+
+    .rank-badge {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .sub {
+      background: rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+    }
+
+    /* 1〜3位キラ演出 */
+    .top-rank::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      background: linear-gradient(
+        120deg,
+        transparent 30%,
+        rgba(255,255,255,0.6),
+        transparent 70%
+      );
+      animation: shine 2.5s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
     }
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <h1>🎂 誕生日占い</h1>
+<div class="box">
+  <h1>🎂 誕生日占い</h1>
 
-    <label>年</label>
-    <select id="year"></select>
+  <label>年</label>
+  <select id="year"></select>
 
-    <label>月</label>
-    <select id="month"></select>
+  <label>月</label>
+  <select id="month"></select>
 
-    <label>日</label>
-    <select id="day"></select>
+  <label>日</label>
+  <select id="day"></select>
 
-    <button onclick="uranai()">占う</button>
+  <button onclick="uranai()">✨ 診断する</button>
 
-    <div id="result" class="result" style="display:none;"></div>
-  </div>
+  <div id="result" class="result"></div>
+</div>
 
 <script>
-const money = {29:[1,"最新の美容アイテム"],7:[2,"昔の小判"],13:[3,"シャインマスカット"],24:[4,"高級ブランドの財布"],1:[5,"目薬"],27:[6,"リップクリーム"],23:[7,"小説"],11:[8,"ハンドクリーム"],3:[9,"遊園地の年間パス"],9:[10,"ヘアケア用品"],21:[11,"新調した運動着"],25:[12,"招き猫"],19:[13,"香水"],17:[14,"ファッション雑誌"],31:[15,"ウォーキングシューズ"],10:[16,"スケジュール帳"],18:[17,"化粧水"],8:[18,"手鏡"],2:[19,"流行の癒しグッズ"],15:[20,"ブレスレッド"],4:[21,"フリマアプリ"],5:[22,"ヘッドホン"],12:[23,"快眠グッズ"],22:[24,"ハードデザインのグッズ"],16:[25,"神社のお守り"],20:[26,"日記帳"],6:[27,"腕時計"],30:[28,"ゴミ箱"],14:[29,"お笑い動画"],28:[30,"高級寝具"],26:[31,"家内安全のお守り"]};
+/* ===== データ ===== */
+const TOTAL = { money:31, health:12, meet:12 };
 
-const health = {"おひつじ座":[5,"家族旅行"],"おうし座":[4,"高級レストラン"],"ふたご座":[6,"温泉とサウナ"],"かに座":[2,"手土産を渡す"],"しし座":[1,"前向きに取り組む"],"おとめ座":[3,"エステサロン"],"てんびん座":[10,"趣味に没頭"],"さそり座":[9,"カラオケ"],"いて座":[11,"一人旅"],"やぎ座":[12,"一人で海外旅行"],"みずがめ座":[7,"デジタルデトックス"],"うお座":[8,"日記を書く"]};
+const money={29:[1,"最新の美容アイテム"],7:[2,"昔の小判"],13:[3,"シャインマスカット"],24:[4,"高級ブランドの財布"],1:[5,"目薬"],27:[6,"リップクリーム"],23:[7,"小説"],11:[8,"ハンドクリーム"],3:[9,"遊園地の年間パス"],9:[10,"ヘアケア用品"],21:[11,"新調した運動着"],25:[12,"招き猫"],19:[13,"香水"],17:[14,"ファッション雑誌"],31:[15,"ウォーキングシューズ"],10:[16,"スケジュール帳"],18:[17,"化粧水"],8:[18,"手鏡"],2:[19,"流行の癒しグッズ"],15:[20,"ブレスレッド"],4:[21,"フリマアプリ"],5:[22,"ヘッドホン"],12:[23,"快眠グッズ"],22:[24,"ハードデザインのグッズ"],16:[25,"神社のお守り"],20:[26,"日記帳"],6:[27,"腕時計"],30:[28,"ゴミ箱"],14:[29,"お笑い動画"],28:[30,"高級寝具"],26:[31,"家内安全のお守り"]};
 
-const meet = {"ひつじ":[1,"うさぎ"],"とら":[2,"いのしし"],"いぬ":[3,"とら"],"へび":[4,"さる"],"とり":[5,"うし"],"いのしし":[6,"とら"],"さる":[7,"たつ"],"たつ":[8,"とり"],"うし":[9,"ねずみ"],"うさぎ":[10,"いのしし"],"ねずみ":[11,"うし"],"うま":[12,"ひつじ"]};
-const eto = ["ねずみ","うし","とら","うさぎ","たつ","へび","うま","ひつじ","さる","とり","いぬ","いのしし"];
+const health={"おひつじ座":[5,"家族旅行"],"おうし座":[4,"高級レストラン"],"ふたご座":[6,"温泉とサウナ"],"かに座":[2,"手土産を渡す"],"しし座":[1,"前向きに取り組む"],"おとめ座":[3,"エステサロン"],"てんびん座":[10,"趣味に没頭"],"さそり座":[9,"カラオケ"],"いて座":[11,"一人旅"],"やぎ座":[12,"一人で海外旅行"],"みずがめ座":[7,"デジタルデトックス"],"うお座":[8,"日記を書く"]};
 
+const meet={"ひつじ":[1,"うさぎ"],"とら":[2,"いのしし"],"いぬ":[3,"とら"],"へび":[4,"さる"],"とり":[5,"うし"],"いのしし":[6,"とら"],"さる":[7,"たつ"],"たつ":[8,"とり"],"うし":[9,"ねずみ"],"うさぎ":[10,"いのしし"],"ねずみ":[11,"うし"],"うま":[12,"ひつじ"]};
+const eto=["ねずみ","うし","とら","うさぎ","たつ","へび","うま","ひつじ","さる","とり","いぬ","いのしし"];
+
+/* ===== 共通関数 ===== */
 function zodiac(m,d){
   const z=[[120,"みずがめ座"],[219,"うお座"],[321,"おひつじ座"],[420,"おうし座"],[521,"ふたご座"],[621,"かに座"],[722,"しし座"],[822,"おとめ座"],[922,"てんびん座"],[1023,"さそり座"],[1122,"いて座"],[1222,"やぎ座"]];
   const md=m*100+d;
@@ -77,21 +169,68 @@ function zodiac(m,d){
   return "やぎ座";
 }
 
+function rankMessage(rank){
+  if(rank===1) return "🎉 伝説級！今日は主役の日";
+  if(rank===2) return "✨ 超ラッキー！攻めてOK";
+  if(rank===3) return "🌈 好調！チャンス到来";
+  if(rank<=6) return "🙂 安定運。着実に";
+  if(rank<=9) return "😌 平常運。無理せず";
+  return "😴 充電期間。休息大事";
+}
+
+function rankText(rank,total){
+  return `${rank}位 / 全${total}位中`;
+}
+
+function totalRankCalc(m,h,e){
+  const score=(m/TOTAL.money+h/TOTAL.health+e/TOTAL.meet)/3;
+  return Math.ceil(score*12);
+}
+
+/* ===== 初期化 ===== */
 for(let y=1950;y<=2026;y++) year.innerHTML+=`<option>${y}</option>`;
 for(let m=1;m<=12;m++) month.innerHTML+=`<option>${m}</option>`;
 for(let d=1;d<=31;d++) day.innerHTML+=`<option>${d}</option>`;
 
+/* ===== 占い ===== */
 function uranai(){
   const y=+year.value,m=+month.value,d=+day.value;
   const z=zodiac(m,d);
   const e=eto[(y-4)%12];
-  result.style.display="block";
-  result.textContent=
-`🎂 占い結果
 
-💰 金運：${money[d][0]}位（${money[d][1]}）
-🩺 健康運：${health[z][0]}位（${health[z][1]}）
-❤️ 出会い運：${meet[e][0]}位（幸運人：${meet[e][1]}）`;
+  const mr=money[d][0], hr=health[z][0], er=meet[e][0];
+  const tr=totalRankCalc(mr,hr,er);
+
+  result.style.display="grid";
+  result.innerHTML=`
+    <div class="card total ${tr<=3?'top-rank':''}">
+      <h2>🏆 総合運</h2>
+      <div class="rank">${rankText(tr,12)}</div>
+      <div class="rank-badge">${rankMessage(tr)}</div>
+      <div class="sub">🌟 3運勢のバランス評価</div>
+    </div>
+
+    <div class="card money ${mr<=3?'top-rank':''}"
+      <h2>💰 金運</h2>
+      <div class="rank">${rankText(mr,31)}</div>
+      <div class="rank-badge">${rankMessage(mr)}</div>
+      <div class="sub">✨ 幸運物：${money[d][1]}</div>
+    </div>
+
+    <div class="card health ${hr<=3?'top-rank':''}">
+      <h2>🩺 健康運</h2>
+      <div class="rank">${rankText(hr,12)}</div>
+      <div class="rank-badge">${rankMessage(hr)}</div>
+      <div class="sub">♡ 幸運行動：${health[z][1]}</div>
+    </div>
+
+    <div class="card meet ${er<=3?'top-rank':''}">
+      <h2>❤️ 出会い運</h2>
+      <div class="rank">${rankText(er,12)}</div>
+      <div class="rank-badge">${rankMessage(er)}</div>
+      <div class="sub">🌟 幸運人：${meet[e][1]}</div>
+    </div>
+  `;
 }
 </script>
 </body>
